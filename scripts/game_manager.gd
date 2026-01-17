@@ -81,7 +81,7 @@ func release_item() -> void:
 func spawn_item() -> void:
 	if item_scene:
 		var item = item_scene.instantiate()
-		item.position = Vector3(-2.5, 1.2, -0.8)
+		item.position = Vector3(-2.1, 1.1, -0.8)  # Sur le tapis roulant
 		add_child(item)
 
 func _on_scanner_body_entered(body: Node3D) -> void:

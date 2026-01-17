@@ -6,7 +6,12 @@ extends RigidBody3D
 
 @onready var barcode_position: Node3D = $BarcodePosition
 
-var is_on_conveyor: bool = true
+# Limites du tapis roulant
+const CONVEYOR_X_MIN: float = -2.25
+const CONVEYOR_X_MAX: float = -0.75
+const CONVEYOR_Z_MIN: float = -1.05
+const CONVEYOR_Z_MAX: float = -0.55
+const CONVEYOR_Y_MIN: float = 0.8  # Hauteur minimum (sur le tapis, pas au sol)
 
 func _ready() -> void:
 	add_to_group("grabbable")
@@ -26,8 +31,13 @@ func check_barcode_facing(scanner_position: Vector3) -> bool:
 
 	return dot > barcode_threshold
 
+func _is_on_conveyor() -> bool:
+	var pos = global_position
+	return pos.x >= CONVEYOR_X_MIN and pos.x <= CONVEYOR_X_MAX \
+		and pos.z >= CONVEYOR_Z_MIN and pos.z <= CONVEYOR_Z_MAX \
+		and pos.y >= CONVEYOR_Y_MIN
+
 func _physics_process(_delta: float) -> void:
-	# Mouvement sur le tapis roulant
-	if is_on_conveyor and not freeze:
-		var conveyor_direction = Vector3(1, 0, 0)
-		linear_velocity = conveyor_direction * 0.3
+	# Mouvement sur le tapis roulant uniquement si l'objet est dessus
+	if _is_on_conveyor() and not freeze:
+		linear_velocity.x = 0.3
