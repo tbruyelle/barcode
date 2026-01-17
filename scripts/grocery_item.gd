@@ -2,7 +2,7 @@ extends RigidBody3D
 
 @export var item_name: String = "Article"
 @export var price: float = 1.0
-@export var barcode_threshold: float = 0.7
+@export var barcode_threshold: float = 0.3
 
 @onready var barcode_position: Node3D = $BarcodePosition
 

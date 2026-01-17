@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://main"]
+[gd_scene load_steps=14 format=3 uid="uid://main"]
 
-[ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_game"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" uid="uid://oqmkf8egy0fo" path="res://scripts/game_manager.gd" id="1_game"]
+[ext_resource type="Script" uid="uid://dc33wripebyff" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" uid="uid://vscxy1t7lgo8" path="res://scripts/beep_generator.gd" id="3_beep"]
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
@@ -18,11 +19,27 @@ albedo_color = Color(0.2, 0.2, 0.2, 1)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_scanner"]
 albedo_color = Color(0.1, 0.1, 0.1, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
-albedo_color = Color(0.7, 0.7, 0.65, 1)
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_scanner"]
 size = Vector3(0.4, 0.3, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_detection"]
+size = Vector3(0.25, 0.25, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_detection"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 1, 0, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_laser"]
+size = Vector3(0.2, 0.005, 0.005)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_laser"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0, 0, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.7, 0.7, 0.65, 1)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_game")
@@ -66,10 +83,20 @@ size = Vector3(0.3, 0.25, 0.3)
 material = SubResource("StandardMaterial3D_scanner")
 
 [node name="ScannerArea" type="Area3D" parent="Checkout/Scanner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.16)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Checkout/Scanner/ScannerArea"]
 shape = SubResource("BoxShape3D_scanner")
+
+[node name="DetectionZone" type="MeshInstance3D" parent="Checkout/Scanner/ScannerArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.078759074, -0.104694724, -0.13414574)
+mesh = SubResource("BoxMesh_detection")
+surface_material_override/0 = SubResource("StandardMaterial3D_detection")
+
+[node name="LaserBeam" type="MeshInstance3D" parent="Checkout/Scanner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -0.16)
+mesh = SubResource("BoxMesh_laser")
+surface_material_override/0 = SubResource("StandardMaterial3D_laser")
 
 [node name="Floor" type="CSGBox3D" parent="Checkout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
@@ -87,7 +114,11 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CrosshairDot" type="Label" parent="UI/Crosshair"]
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.8)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
 theme_override_font_sizes/font_size = 24
 text = "+"
+
+[node name="ScanSound" type="AudioStreamPlayer" parent="."]
+script = ExtResource("3_beep")

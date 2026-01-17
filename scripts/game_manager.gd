@@ -8,6 +8,7 @@ signal item_scanned(item_name: String, price: float)
 @onready var camera: Camera3D = $Player/Camera3D
 @onready var held_item_position: Node3D = $Player/Camera3D/HeldItem
 @onready var scanner_area: Area3D = $Checkout/Scanner/ScannerArea
+@onready var scan_sound: AudioStreamPlayer = $ScanSound
 
 var held_item: RigidBody3D = null
 var score: int = 0
@@ -40,6 +41,9 @@ func _physics_process(delta: float) -> void:
 			held_item.rotate_y(delta * 2.0)
 		if Input.is_action_pressed("rotate_item_z"):
 			held_item.rotate_z(delta * 2.0)
+
+		# Vérifier si l'objet est dans la zone du scanner
+		check_scanning(held_item)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("grab"):
@@ -84,6 +88,19 @@ func spawn_item() -> void:
 		item.position = Vector3(-2.1, 1.1, -0.8)  # Sur le tapis roulant
 		add_child(item)
 
+func check_scanning(item: Node3D) -> void:
+	if not item.has_method("check_barcode_facing"):
+		return
+
+	# Vérifier la distance au scanner
+	var distance = item.global_position.distance_to(scanner_area.global_position)
+	if distance > 0.25:
+		return
+
+	# Vérifier si le code-barre fait face au scanner
+	if item.check_barcode_facing(scanner_area.global_position):
+		scan_item(item)
+
 func _on_scanner_body_entered(body: Node3D) -> void:
 	if body.is_in_group("grabbable") and body.has_method("check_barcode_facing"):
 		if body.check_barcode_facing(scanner_area.global_position):
@@ -104,5 +121,4 @@ func scan_item(item: Node3D) -> void:
 	emit_signal("item_scanned", item_name, price)
 	print("Article scanné: %s - %.2f€" % [item_name, price])
 
-	# Effet visuel/sonore ici
-	# TODO: Ajouter un son de bip
+	scan_sound.play()
