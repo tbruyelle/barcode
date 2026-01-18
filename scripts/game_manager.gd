@@ -86,6 +86,12 @@ func spawn_item() -> void:
 	if item_scene:
 		var item = item_scene.instantiate()
 		item.position = Vector3(-2.1, 1.1, -0.8)  # Sur le tapis roulant
+		# Rotation aléatoire initiale
+		item.rotation = Vector3(
+			randf_range(0, TAU),
+			randf_range(0, TAU),
+			randf_range(0, TAU)
+		)
 		add_child(item)
 
 func check_scanning(item: Node3D) -> void:
