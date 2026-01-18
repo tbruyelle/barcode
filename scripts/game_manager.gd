@@ -85,7 +85,7 @@ func release_item() -> void:
 func spawn_item() -> void:
 	if item_scene:
 		var item = item_scene.instantiate()
-		item.position = Vector3(-2.1, 1.1, -0.8)  # Sur le tapis roulant
+		item.position = Vector3(-2.1, 1.3, -0.8)  # Au-dessus du tapis roulant
 		# Rotation aléatoire initiale
 		item.rotation = Vector3(
 			randf_range(0, TAU),
