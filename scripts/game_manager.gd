@@ -91,10 +91,15 @@ func press_speed_button(button: Node) -> void:
 		conveyor_speed = clamp(conveyor_speed + CONVEYOR_SPEED_CHANGE * change, CONVEYOR_SPEED_MIN, CONVEYOR_SPEED_MAX)
 		print("Vitesse du tapis: %.1f" % conveyor_speed)
 
+const THROW_FORCE: float = 3.0
+
 func release_item() -> void:
 	if held_item:
 		held_item.freeze = false
 		held_item.collision_layer = 1
+		# Projeter l'objet dans la direction de la caméra
+		var throw_direction = -camera.global_transform.basis.z
+		held_item.linear_velocity = throw_direction * THROW_FORCE
 		held_item = null
 
 func spawn_item() -> void:
