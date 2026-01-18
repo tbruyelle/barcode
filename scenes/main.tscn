@@ -89,10 +89,23 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, -0.6)
 
 [node name="Checkout" type="Node3D" parent="."]
 
-[node name="Counter" type="CSGBox3D" parent="Checkout"]
+[node name="Counter" type="CSGCombiner3D" parent="Checkout"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.8)
 use_collision = true
+
+[node name="CounterBase" type="CSGBox3D" parent="Checkout/Counter"]
 size = Vector3(2, 0.8, 0.6)
+material = SubResource("StandardMaterial3D_counter")
+
+[node name="BinCutout" type="CSGBox3D" parent="Checkout/Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6633423, 0.31549683, 0)
+operation = 2
+size = Vector3(0.7266846, 0.16900635, 0.4)
+
+[node name="BinSlope" type="CSGBox3D" parent="Checkout/Counter"]
+transform = Transform3D(0.98492444, 0.17366876, 0, -0.17366876, 0.98492444, 0, 0, 0, 1, 0.6946897, 0.2828687, -0.00029057264)
+operation = 2
+size = Vector3(0.7615076, 0.24152832, 0.398833)
 material = SubResource("StandardMaterial3D_counter")
 
 [node name="ConveyorBelt" type="CSGBox3D" parent="Checkout"]
@@ -125,7 +138,7 @@ mesh = SubResource("BoxMesh_laser")
 surface_material_override/0 = SubResource("StandardMaterial3D_laser")
 
 [node name="Floor" type="CSGBox3D" parent="Checkout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.008990884, -0.03921585, 0.0060617924)
 use_collision = true
 size = Vector3(10, 0.1, 10)
 material = SubResource("StandardMaterial3D_floor")
