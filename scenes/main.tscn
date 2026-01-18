@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://main"]
+[gd_scene load_steps=17 format=3 uid="uid://main"]
 
 [ext_resource type="Script" uid="uid://oqmkf8egy0fo" path="res://scripts/game_manager.gd" id="1_game"]
 [ext_resource type="Script" uid="uid://dc33wripebyff" path="res://scripts/player.gd" id="2_player"]
@@ -46,6 +46,9 @@ albedo_color = Color(0.2, 0.8, 0.2, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_red"]
 albedo_color = Color(0.8, 0.2, 0.2, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_death"]
+albedo_color = Color(0.62352943, 0.003921569, 0.9372549, 1)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_game")
@@ -126,6 +129,14 @@ radius = 0.04
 height = 0.03
 material = SubResource("StandardMaterial3D_button_red")
 metadata/speed_change = 1
+
+[node name="ButtonSpeedDeath" type="CSGCylinder3D" parent="Checkout" groups=["speed_button"]]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.7913342, 0.72, -1.115)
+use_collision = true
+radius = 0.04
+height = 0.03
+material = SubResource("StandardMaterial3D_button_death")
+metadata/speed_change = 3
 
 [node name="UI" type="CanvasLayer" parent="."]
 
