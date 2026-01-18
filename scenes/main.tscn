@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://main"]
+[gd_scene load_steps=19 format=3 uid="uid://main"]
 
 [ext_resource type="Script" uid="uid://oqmkf8egy0fo" path="res://scripts/game_manager.gd" id="1_game"]
 [ext_resource type="Script" uid="uid://dc33wripebyff" path="res://scripts/player.gd" id="2_player"]
@@ -41,6 +41,12 @@ albedo_color = Color(1, 0, 0, 0.8)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.7, 0.7, 0.65, 1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wall"]
+albedo_color = Color(0.85, 0.82, 0.78, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ceiling"]
+albedo_color = Color(0.95, 0.95, 0.95, 1)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_green"]
 albedo_color = Color(0.2, 0.8, 0.2, 1)
 
@@ -53,9 +59,15 @@ albedo_color = Color(0.62352943, 0.003921569, 0.9372549, 1)
 [node name="Main" type="Node3D"]
 script = ExtResource("1_game")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.707, 0.707, 0, -0.707, 0.707, 0, 10, 0)
-shadow_enabled = true
+[node name="CeilingLight1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0019152, 2.8, -0.0036902428)
+light_energy = 2.0
+omni_range = 6.0
+
+[node name="CeilingLight2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5462198, 2.8, -0.2532792)
+light_energy = 2.0
+omni_range = 6.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")
@@ -113,6 +125,35 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
 use_collision = true
 size = Vector3(10, 0.1, 10)
 material = SubResource("StandardMaterial3D_floor")
+
+[node name="WallNorth" type="CSGBox3D" parent="Checkout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 5)
+use_collision = true
+size = Vector3(10, 3, 0.1)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallSouth" type="CSGBox3D" parent="Checkout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -5)
+use_collision = true
+size = Vector3(10, 3, 0.1)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="Checkout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 0)
+use_collision = true
+size = Vector3(0.1, 3, 10)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="Checkout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.5, 0)
+use_collision = true
+size = Vector3(0.1, 3, 10)
+material = SubResource("StandardMaterial3D_wall")
+
+[node name="Ceiling" type="CSGBox3D" parent="Checkout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+size = Vector3(10, 0.1, 10)
+material = SubResource("StandardMaterial3D_ceiling")
 
 [node name="ButtonSpeedDown" type="CSGCylinder3D" parent="Checkout" groups=["speed_button"]]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.6, 0.7197862, -1.1152271)
