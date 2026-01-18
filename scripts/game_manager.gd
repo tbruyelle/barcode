@@ -5,6 +5,10 @@ signal item_scanned(item_name: String, price: float)
 @export var spawn_interval: float = 3.0
 @export var conveyor_speed: float = 0.6
 
+const CONVEYOR_SPEED_MIN: float = 0.3
+const CONVEYOR_SPEED_MAX: float = 2.0
+const CONVEYOR_SPEED_CHANGE: float = 0.2
+
 @onready var camera: Camera3D = $Player/Camera3D
 @onready var held_item_position: Node3D = $Player/Camera3D/HeldItem
 @onready var scanner_area: Area3D = $Checkout/Scanner/ScannerArea
@@ -69,12 +73,23 @@ func try_grab_item() -> void:
 	query.collide_with_bodies = true
 
 	var result = space_state.intersect_ray(query)
-	if result and result.collider is RigidBody3D:
-		var item = result.collider
-		if item.is_in_group("grabbable"):
-			held_item = item
+	if result:
+		var collider = result.collider
+		# Vérifier si c'est un bouton de vitesse
+		if collider.is_in_group("speed_button"):
+			press_speed_button(collider)
+			return
+		# Sinon, essayer de prendre un objet
+		if collider is RigidBody3D and collider.is_in_group("grabbable"):
+			held_item = collider
 			held_item.freeze = true
 			held_item.collision_layer = 0
+
+func press_speed_button(button: Node) -> void:
+	if button.has_meta("speed_change"):
+		var change = button.get_meta("speed_change")
+		conveyor_speed = clamp(conveyor_speed + CONVEYOR_SPEED_CHANGE * change, CONVEYOR_SPEED_MIN, CONVEYOR_SPEED_MAX)
+		print("Vitesse du tapis: %.1f" % conveyor_speed)
 
 func release_item() -> void:
 	if held_item:
