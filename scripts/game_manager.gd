@@ -138,6 +138,10 @@ func scan_item(item: Node3D) -> void:
 
 	item.set_meta("scanned", true)
 
+	# Effet visuel sur l'article scanné
+	if item.has_method("mark_as_scanned"):
+		item.mark_as_scanned()
+
 	var item_name = item.get_meta("item_name") if item.has_meta("item_name") else "Article"
 	var price = item.get_meta("price") if item.has_meta("price") else 1.0
 
