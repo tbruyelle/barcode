@@ -2,6 +2,10 @@
 
 Jeu 3D Godot 4.5 où le joueur incarne un caissier de supermarché. Il ne peut pas bouger mais peut tourner la tête. Les articles arrivent sur un tapis roulant et doivent être scannés en orientant le code-barre vers le lecteur.
 
+## Workflow
+
+- Update CLAUDE.md amd README.md before each time you're asked to commit.
+
 ## Structure du projet
 
 ```
