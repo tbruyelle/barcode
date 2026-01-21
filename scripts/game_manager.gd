@@ -9,6 +9,33 @@ const CONVEYOR_SPEED_MIN: float = 0.3
 const CONVEYOR_SPEED_MAX: float = 2.0
 const CONVEYOR_SPEED_CHANGE: float = 0.2
 
+# Définition des produits variés (basés sur les étagères)
+const PRODUCT_COLORS: Array = [
+	Color(0.9, 0.2, 0.15, 1),   # Rouge
+	Color(0.95, 0.85, 0.2, 1),  # Jaune
+	Color(0.2, 0.7, 0.3, 1),    # Vert
+	Color(0.2, 0.5, 0.9, 1),    # Bleu
+	Color(0.95, 0.5, 0.1, 1),   # Orange
+	Color(0.6, 0.3, 0.7, 1),    # Violet
+	Color(0.95, 0.5, 0.7, 1),   # Rose
+	Color(0.5, 0.35, 0.2, 1),   # Marron
+]
+
+const PRODUCT_NAMES: Array = [
+	"Sauce tomate",
+	"Moutarde",
+	"Cornichons",
+	"Confiture",
+	"Jus d'orange",
+	"Confiture de mûres",
+	"Bonbons",
+	"Chocolat",
+]
+
+# Tailles min/max pour générer des produits variés (70% des produits étagères)
+const SIZE_MIN: Vector3 = Vector3(0.07, 0.084, 0.056)
+const SIZE_MAX: Vector3 = Vector3(0.154, 0.21, 0.112)
+
 @onready var camera: Camera3D = $Player/Camera3D
 @onready var held_item_position: Node3D = $Player/Camera3D/HeldItem
 @onready var scanner_area: Area3D = $Checkout/Scanner/ScannerArea
@@ -113,6 +140,24 @@ func spawn_item() -> void:
 			randf_range(0, TAU)
 		)
 		add_child(item)
+
+		# Appliquer une apparence aléatoire basée sur les produits des étagères
+		var color_index = randi() % PRODUCT_COLORS.size()
+		var color = PRODUCT_COLORS[color_index]
+		var product_name = PRODUCT_NAMES[color_index]
+
+		# Générer une taille aléatoire
+		var size = Vector3(
+			randf_range(SIZE_MIN.x, SIZE_MAX.x),
+			randf_range(SIZE_MIN.y, SIZE_MAX.y),
+			randf_range(SIZE_MIN.z, SIZE_MAX.z)
+		)
+
+		# Prix basé sur le volume
+		var volume = size.x * size.y * size.z
+		var price = snappedf(1.0 + volume * 100.0, 0.1)
+
+		item.set_appearance(size, color, product_name, price)
 
 func check_scanning(item: Node3D) -> void:
 	if not item.has_method("check_barcode_facing"):

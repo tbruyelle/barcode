@@ -6,6 +6,10 @@ extends RigidBody3D
 
 @onready var barcode_position: Node3D = $BarcodePosition
 @onready var mesh: MeshInstance3D = $Mesh
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
+@onready var barcode_mesh: MeshInstance3D = $BarcodePosition/BarcodeMesh
+
+var item_size: Vector3 = Vector3(0.13, 0.18, 0.06)
 
 # Limites du tapis roulant
 const CONVEYOR_X_MIN: float = -2.25
@@ -50,7 +54,7 @@ func mark_as_scanned() -> void:
 	# Créer un halo fin autour de l'objet
 	halo = MeshInstance3D.new()
 	var box = BoxMesh.new()
-	box.size = Vector3(0.14, 0.19, 0.07)  # Juste un peu plus grand
+	box.size = item_size + Vector3(0.01, 0.01, 0.01)  # Juste un peu plus grand
 	halo.mesh = box
 
 	halo_material = StandardMaterial3D.new()
@@ -77,3 +81,33 @@ func _animate_halo() -> void:
 func _set_halo_alpha(alpha: float) -> void:
 	if halo_material:
 		halo_material.albedo_color.a = alpha
+
+func set_appearance(size: Vector3, color: Color, product_name: String, product_price: float) -> void:
+	item_size = size
+	item_name = product_name
+	price = product_price
+	set_meta("item_name", item_name)
+	set_meta("price", price)
+
+	# Mettre à jour le mesh
+	var box_mesh = BoxMesh.new()
+	box_mesh.size = size
+	mesh.mesh = box_mesh
+
+	# Mettre à jour le matériau
+	var mat = StandardMaterial3D.new()
+	mat.albedo_color = color
+	mesh.set_surface_override_material(0, mat)
+
+	# Mettre à jour la collision shape
+	var shape = BoxShape3D.new()
+	shape.size = size + Vector3(0.02, 0.02, 0.02)
+	collision_shape.shape = shape
+
+	# Repositionner le code-barre sur la face avant
+	barcode_position.position = Vector3(0, 0, size.z / 2.0 + 0.001)
+
+	# Mettre à jour la taille du halo si scanné
+	if halo:
+		var halo_box = halo.mesh as BoxMesh
+		halo_box.size = size + Vector3(0.01, 0.01, 0.01)
