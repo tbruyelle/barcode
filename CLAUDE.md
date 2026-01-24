@@ -4,7 +4,7 @@ Jeu 3D Godot 4.5 où le joueur incarne un caissier de supermarché. Il ne peut p
 
 ## Workflow
 
-- Update CLAUDE.md amd README.md before each time you're asked to commit.
+- Update CLAUDE.md before each time you're asked to commit.
 
 ## Structure du projet
 
@@ -83,6 +83,13 @@ scripts/
 
 7. **Projection des objets** : Les objets sont projetés dans la direction de la caméra au lâcher (`THROW_FORCE = 3.0`)
 
+8. **Client** : Sprite3D avec billboard axe Y. Animation de marche naturelle :
+   - Rebond vertical (bob) : fréquence 0.8 Hz, amplitude 0.01m
+   - Balancement latéral (sway) : fréquence 0.6 Hz, amplitude 0.02 rad
+   - Déplacement : 0.1 m/s du début (x=-3) vers la fin (x=1.5) de la caisse
+
+9. **Rebords** : Petits rebords sur le tapis roulant (avant/arrière) et le comptoir (côté client) pour empêcher les objets de tomber
+
 ## Environnement
 
 - **Pièce fermée** : 4 murs (20x25m), plafond à 3m
@@ -104,5 +111,5 @@ scripts/
 ## À faire (idées futures)
 
 - Interface de score
-- File de clients
+- File de clients (un client implémenté, à étendre pour une file d'attente)
 - Système de difficulté progressive
