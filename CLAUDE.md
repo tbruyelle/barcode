@@ -13,6 +13,7 @@ scenes/
 ├── main.tscn              # Scène principale (caisse, tapis, scanner, UI, environnement)
 ├── shelves.tscn           # Rayons du supermarché avec produits (~660 objets)
 ├── customer.tscn          # Client (Sprite3D billboard)
+├── cash_register.tscn     # Caisse enregistreuse avec boutons et tiroir
 └── items/
     └── grocery_item.tscn  # Article scannable (RigidBody3D)
 
@@ -21,6 +22,7 @@ scripts/
 ├── player.gd              # Caméra première personne (rotation souris)
 ├── grocery_item.gd        # Comportement des articles + détection tapis + effet scanné
 ├── customer.gd            # Comportement du client (déplacement le long de la caisse)
+├── cash_register.gd       # Caisse enregistreuse (tiroir animé)
 └── beep_generator.gd      # Génération procédurale du son de bip
 ```
 
@@ -32,6 +34,7 @@ scripts/
 - **Bac de réception** : Creusé dans le comptoir avec pente descendante vers le panier
 - **Panier de course** : Reçoit les articles scannés en bas de la pente
 - **Rayons supermarché** : 3 allées de 12m avec étagères double-face et produits variés
+- **Caisse enregistreuse** : À droite du caissier (x=1.2, z=-1.3), sur un meuble dédié. Boutons décoratifs + bouton jaune pour ouvrir/fermer le tiroir
 
 ## Disposition spatiale de la caisse
 
@@ -90,6 +93,8 @@ scripts/
 
 9. **Rebords** : Petits rebords sur le tapis roulant (avant/arrière) et le comptoir (côté client) pour empêcher les objets de tomber
 
+10. **Caisse enregistreuse** : Scène séparée (`cash_register.tscn`) avec script `cash_register.gd`. Tiroir animé via Tween (ouverture avec TRANS_BACK pour effet rebond). Bouton jaune dans le groupe `drawer_button`, détecté par raycast dans `game_manager.gd`
+
 ## Environnement
 
 - **Pièce fermée** : 4 murs (20x25m), plafond à 3m
@@ -106,6 +111,7 @@ scripts/
 - Code-barre : partie blanche sur les articles
 - Halo pulsant : vert semi-transparent sur articles scannés
 - Panier de course : bleu, en bas de la pente
+- Caisse enregistreuse : corps gris foncé, écran vert foncé incliné, boutons crème (6 décoratifs), bouton vert (total), bouton jaune (tiroir), tiroir gris clair animé
 - Produits étagères : 8 couleurs (rouge, jaune, vert, bleu, orange, violet, rose, marron), ~330 produits avec codes-barres
 
 ## À faire (idées futures)

@@ -113,6 +113,10 @@ func try_grab_item() -> void:
 		if collider.is_in_group("speed_button"):
 			press_speed_button(collider)
 			return
+		# Vérifier si c'est le bouton du tiroir-caisse
+		if collider.is_in_group("drawer_button"):
+			$Checkout/CashRegister.toggle_drawer()
+			return
 		# Sinon, essayer de prendre un objet
 		if collider is RigidBody3D and collider.is_in_group("grabbable"):
 			held_item = collider
