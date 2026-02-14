@@ -25,7 +25,8 @@ scripts/
 ├── cash_register.gd       # Caisse enregistreuse (tiroir animé)
 ├── beep_generator.gd      # Génération procédurale du son de bip
 ├── detection_zone.gd      # Animation scintillante de la zone de détection
-└── laser_glow.gd          # Lueur rouge animée le long des lasers
+├── laser_glow.gd          # Lueur rouge animée le long des lasers
+└── neon_light.gd          # Effet néon (scintillement + grésillement)
 ```
 
 ## Gameplay
@@ -106,6 +107,8 @@ scripts/
 12. **Sons de collision** : Chaque article a un `AudioStreamPlayer3D` (`CollisionSound`). Son procédural (80ms, 80-240Hz, décroissance exp). Volume proportionnel à la vitesse d'impact (seuil 0.3 m/s), pitch aléatoire (0.8-1.3x). Nécessite `contact_monitor = true` et `max_contacts_reported = 4` sur le RigidBody3D.
 
 13. **Effets visuels scanner** : `detection_zone.gd` anime l'alpha et l'émission de la DetectionZone (3 ondes superposées 6/14/23 Hz). `laser_glow.gd` fait voyager une sphère lumineuse rouge le long de chaque LaserBeam (droite→gauche horizontal, haut→bas vertical), intensité variable selon la position.
+
+14. **Néons** : `neon_light.gd` sur les 3 CeilingLight. Scintillement aléatoire (0.5%/frame, 50-250ms) avec variation d'intensité 30-110%. Grésillement procédural 50Hz + harmoniques en AudioStreamPlayer3D spatial. Micro-variations indépendantes par lumière.
 
 ## Environnement
 
