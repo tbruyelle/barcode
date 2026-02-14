@@ -25,7 +25,7 @@ albedo_color = Color(0.2, 0.2, 0.2, 1)
 albedo_color = Color(0.1, 0.1, 0.1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_scanner"]
-size = Vector3(0.4, 0.3, 0.4)
+size = Vector3(0.4, 0.1763672, 0.098553464)
 
 [sub_resource type="BoxMesh" id="BoxMesh_detection"]
 size = Vector3(0.25, 0.25, 0.1)
@@ -64,6 +64,16 @@ albedo_color = Color(0.8, 0.2, 0.2, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_death"]
 albedo_color = Color(0.62352943, 0.003921569, 0.9372549, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_mono"]
+font_names = PackedStringArray("Courier New", "Liberation Mono", "DejaVu Sans Mono", "monospace")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scanhud"]
+bg_color = Color(0.1, 0.1, 0.15, 0.75)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [node name="Main" type="Node3D" unique_id=509619088]
 script = ExtResource("1_game")
@@ -163,19 +173,24 @@ size = Vector3(0.3, 0.25, 0.3)
 material = SubResource("StandardMaterial3D_scanner")
 
 [node name="ScannerArea" type="Area3D" parent="Checkout/Scanner" unique_id=418503234]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -0.16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022575885, 0.14686668, -0.16000003)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Checkout/Scanner/ScannerArea" unique_id=264920355]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00023919344, 0.0008163452, 0.00059497356)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00023919344, -0.06100005, -0.082824826)
 shape = SubResource("BoxShape3D_scanner")
 
 [node name="DetectionZone" type="MeshInstance3D" parent="Checkout/Scanner/ScannerArea" unique_id=454334718]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.015365355, -0.1477195, -0.120960474)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0153653845, -0.12014878, -0.04369712)
 mesh = SubResource("BoxMesh_detection")
 surface_material_override/0 = SubResource("StandardMaterial3D_detection")
 
 [node name="LaserBeam" type="MeshInstance3D" parent="Checkout/Scanner" unique_id=1343381768]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, -0.16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.017535463, 0.023364663, -0.15617156)
+mesh = SubResource("BoxMesh_laser")
+surface_material_override/0 = SubResource("StandardMaterial3D_laser")
+
+[node name="LaserBeam" type="MeshInstance3D" parent="Checkout/Scanner/LaserBeam" unique_id=1859135983]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.009513177, -0.008360207, -0.0011028647)
 mesh = SubResource("BoxMesh_laser")
 surface_material_override/0 = SubResource("StandardMaterial3D_laser")
 
@@ -213,7 +228,7 @@ size = Vector3(0.1, 5.071167, 3.7543945)
 material = SubResource("StandardMaterial3D_wall")
 
 [node name="WallAboveDoor" type="CSGBox3D" parent="Checkout/WallEast" unique_id=295270622]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.688318, 0.011070251)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00032567978, 3.6889312, 0.011017278)
 use_collision = true
 size = Vector3(0.1, 2.7766356, 2.4671478)
 material = SubResource("StandardMaterial3D_wall")
@@ -289,6 +304,57 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.8)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5)
 theme_override_font_sizes/font_size = 24
 text = "+"
+
+[node name="ScanHUD" type="PanelContainer" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 360.0
+grow_horizontal = 0
+grow_vertical = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_scanhud")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/ScanHUD"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/ScanHUD/MarginContainer"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="UI/ScanHUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_fonts/font = SubResource("SystemFont_mono")
+theme_override_font_sizes/font_size = 22
+text = "Articles scannés"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/ScanHUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 240)
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ItemList" type="VBoxContainer" parent="UI/ScanHUD/MarginContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSeparator" type="HSeparator" parent="UI/ScanHUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TotalLabel" type="Label" parent="UI/ScanHUD/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0.7, 1)
+theme_override_fonts/font = SubResource("SystemFont_mono")
+theme_override_font_sizes/font_size = 24
+text = "Total: 0.00 €"
+horizontal_alignment = 2
 
 [node name="ScanSound" type="AudioStreamPlayer" parent="." unique_id=1437190105]
 script = ExtResource("3_beep")

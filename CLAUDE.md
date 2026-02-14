@@ -99,6 +99,8 @@ scripts/
 
 10. **Caisse enregistreuse** : Scène séparée (`cash_register.tscn`) avec script `cash_register.gd`. Tiroir animé via Tween (ouverture avec TRANS_BACK pour effet rebond). Bouton jaune dans le groupe `drawer_button`, détecté par raycast dans `game_manager.gd`
 
+11. **HUD articles scannés** : Panneau semi-transparent en haut à droite (PanelContainer sous UI/CanvasLayer). Police monospace console. Affiche la liste des articles scannés avec prix et le total en bas. Mis à jour en temps réel dans `scan_item()` via `game_manager.gd`. Auto-scroll vers le dernier article via `ensure_control_visible`.
+
 ## Environnement
 
 - **Pièce fermée** : 4 murs (20x25m), plafond à 3m
@@ -117,9 +119,9 @@ scripts/
 - Panier de course : bleu, en bas de la pente
 - Caisse enregistreuse : corps gris foncé, écran vert foncé incliné, boutons crème (6 décoratifs), bouton vert (total), bouton jaune (tiroir), tiroir gris clair animé
 - Produits étagères : 8 couleurs (rouge, jaune, vert, bleu, orange, violet, rose, marron), ~330 produits avec codes-barres
+- HUD scan : panneau sombre semi-transparent en haut à droite, police monospace, titre "Articles scannés", liste scrollable, séparateur, total jaune
 
 ## À faire (idées futures)
 
-- Interface de score
 - File de clients (un client implémenté, à étendre pour une file d'attente)
 - Système de difficulté progressive

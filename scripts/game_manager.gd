@@ -43,8 +43,11 @@ const SIZE_MAX: Vector3 = Vector3(0.154, 0.21, 0.112)
 @onready var held_item_position: Node3D = $Player/Camera3D/HeldItem
 @onready var scanner_area: Area3D = $Checkout/Scanner/ScannerArea
 @onready var scan_sound: AudioStreamPlayer = $ScanSound
+@onready var scan_item_list: VBoxContainer = $UI/ScanHUD/MarginContainer/VBoxContainer/ScrollContainer/ItemList
+@onready var total_label: Label = $UI/ScanHUD/MarginContainer/VBoxContainer/TotalLabel
 
 var held_item: RigidBody3D = null
+var total_price: float = 0.0
 var score: int = 0
 var items_scanned: int = 0
 var spawn_timer: float = 0.0
@@ -208,6 +211,20 @@ func scan_item(item: Node3D) -> void:
 
 	emit_signal("item_scanned", item_name, price)
 	print("Article scanné: %s - %.2f€" % [item_name, price])
+
+	# Mettre à jour le HUD
+	total_price += price
+	var item_label = Label.new()
+	item_label.text = "%s  —  %.2f €" % [item_name, price]
+	item_label.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	var mono_font = SystemFont.new()
+	mono_font.font_names = PackedStringArray(["Courier New", "Liberation Mono", "DejaVu Sans Mono", "monospace"])
+	item_label.add_theme_font_override("font", mono_font)
+	item_label.add_theme_font_size_override("font_size", 17)
+	scan_item_list.add_child(item_label)
+	total_label.text = "Total: %.2f €" % total_price
+	# Auto-scroll vers le dernier article
+	scan_item_list.get_parent().call_deferred("ensure_control_visible", item_label)
 
 	scan_sound.play()
 
