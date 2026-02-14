@@ -74,7 +74,7 @@ scripts/
 
 ## Points techniques importants
 
-1. **Collision des objets tenus** : `collision_layer = 0` quand tenu, donc la détection du scan se fait en continu dans `_physics_process` (pas via Area3D signal)
+1. **Collision des objets tenus** : `gravity_scale = 0`, `collision_layer = 2` quand tenu. Déplacement par `linear_velocity` (pas position directe) pour que la physique gère les collisions. L'objet tourne naturellement en cas de collision (`angular_damp = 3.0`). Détection du scan en continu dans `_physics_process`.
 
 2. **Détection tapis roulant** : Vérification position (X, Y, Z) dans `grocery_item.gd` - les objets ne bougent que s'ils sont sur le tapis (Y >= 0.8)
 

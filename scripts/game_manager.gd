@@ -69,19 +69,19 @@ func _process(delta: float) -> void:
 		spawn_timer = 0.0
 		spawn_item()
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if held_item:
-		# Déplacer l'objet tenu vers la position devant la caméra
+		# Déplacer l'objet via vélocité (la physique gère les collisions)
 		var target_pos = held_item_position.global_position
-		held_item.global_position = held_item.global_position.lerp(target_pos, 15.0 * delta)
+		held_item.linear_velocity = (target_pos - held_item.global_position) * 15.0
 
-		# Rotation de l'objet avec la molette ou les touches
+		# Rotation manuelle via angular_velocity
 		if Input.is_action_pressed("rotate_item_x"):
-			held_item.rotate_x(delta * 2.0)
+			held_item.angular_velocity.x = 2.0
 		if Input.is_action_pressed("rotate_item_y"):
-			held_item.rotate_y(delta * 2.0)
+			held_item.angular_velocity.y = 2.0
 		if Input.is_action_pressed("rotate_item_z"):
-			held_item.rotate_z(delta * 2.0)
+			held_item.angular_velocity.z = 2.0
 
 		# Vérifier si l'objet est dans la zone du scanner
 		check_scanning(held_item)
@@ -97,9 +97,9 @@ func _input(event: InputEvent) -> void:
 	if held_item:
 		if event is InputEventMouseButton:
 			if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-				held_item.rotate_x(0.2)
+				held_item.angular_velocity.x += 3.0
 			elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-				held_item.rotate_x(-0.2)
+				held_item.angular_velocity.x -= 3.0
 
 func try_grab_item() -> void:
 	var space_state = get_world_3d().direct_space_state
@@ -123,8 +123,9 @@ func try_grab_item() -> void:
 		# Sinon, essayer de prendre un objet
 		if collider is RigidBody3D and collider.is_in_group("grabbable"):
 			held_item = collider
-			held_item.freeze = true
-			held_item.collision_layer = 0
+			held_item.gravity_scale = 0.0
+			held_item.angular_damp = 3.0
+			held_item.collision_layer = 2  # Invisible au raycast (layer 1) mais collisions actives
 
 func press_speed_button(button: Node) -> void:
 	if button.has_meta("speed_change"):
@@ -138,7 +139,8 @@ const THROW_FORCE: float = 3.0
 
 func release_item() -> void:
 	if held_item:
-		held_item.freeze = false
+		held_item.gravity_scale = 1.0
+		held_item.angular_damp = 0.0
 		held_item.collision_layer = 1
 		# Projeter l'objet dans la direction de la caméra
 		var throw_direction = -camera.global_transform.basis.z
