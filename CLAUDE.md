@@ -101,6 +101,8 @@ scripts/
 
 11. **HUD articles scannés** : Panneau semi-transparent en haut à droite (PanelContainer sous UI/CanvasLayer). Police monospace console. Affiche la liste des articles scannés avec prix et le total en bas. Mis à jour en temps réel dans `scan_item()` via `game_manager.gd`. Auto-scroll vers le dernier article via `ensure_control_visible`.
 
+12. **Sons de collision** : Chaque article a un `AudioStreamPlayer3D` (`CollisionSound`). Son procédural (80ms, 80-240Hz, décroissance exp). Volume proportionnel à la vitesse d'impact (seuil 0.3 m/s), pitch aléatoire (0.8-1.3x). Nécessite `contact_monitor = true` et `max_contacts_reported = 4` sur le RigidBody3D.
+
 ## Environnement
 
 - **Pièce fermée** : 4 murs (20x25m), plafond à 3m
