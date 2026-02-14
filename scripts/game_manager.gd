@@ -2,15 +2,7 @@ extends Node3D
 
 signal item_scanned(item_name: String, price: float)
 
-@export var spawn_interval: float = 3.0
-@export var conveyor_speed: float = 0.6
-
-const CONVEYOR_SPEED_MIN: float = 0.3
-const CONVEYOR_SPEED_MAX: float = 2.0
-const CONVEYOR_SPEED_CHANGE: float = 0.2
-
-const BASE_CONVEYOR_SPEED: float = 0.6
-const BASE_SPAWN_INTERVAL: float = 3.0
+const CONVEYOR_SPEED: float = 0.6
 
 # Définition des produits variés (basés sur les étagères)
 const PRODUCT_COLORS: Array = [
@@ -50,7 +42,6 @@ var held_item: RigidBody3D = null
 var total_price: float = 0.0
 var score: int = 0
 var items_scanned: int = 0
-var spawn_timer: float = 0.0
 
 var item_scene: PackedScene
 var customer_scene: PackedScene
@@ -60,14 +51,7 @@ func _ready() -> void:
 	item_scene = preload("res://scenes/items/grocery_item.tscn")
 	customer_scene = preload("res://scenes/customer.tscn")
 	scanner_area.body_entered.connect(_on_scanner_body_entered)
-	spawn_item()
-	spawn_customer()
-
-func _process(delta: float) -> void:
-	spawn_timer += delta
-	if spawn_timer >= spawn_interval:
-		spawn_timer = 0.0
-		spawn_item()
+	spawn_next_customer()
 
 func _physics_process(_delta: float) -> void:
 	if held_item:
@@ -112,10 +96,6 @@ func try_grab_item() -> void:
 	var result = space_state.intersect_ray(query)
 	if result:
 		var collider = result.collider
-		# Vérifier si c'est un bouton de vitesse
-		if collider.is_in_group("speed_button"):
-			press_speed_button(collider)
-			return
 		# Vérifier si c'est le bouton du tiroir-caisse
 		if collider.is_in_group("drawer_button"):
 			$Checkout/CashRegister.toggle_drawer()
@@ -126,14 +106,6 @@ func try_grab_item() -> void:
 			held_item.gravity_scale = 0.0
 			held_item.angular_damp = 3.0
 			held_item.collision_layer = 2  # Invisible au raycast (layer 1) mais collisions actives
-
-func press_speed_button(button: Node) -> void:
-	if button.has_meta("speed_change"):
-		var change = button.get_meta("speed_change")
-		conveyor_speed = clamp(conveyor_speed + CONVEYOR_SPEED_CHANGE * change, CONVEYOR_SPEED_MIN, CONVEYOR_SPEED_MAX)
-		# Ajuster l'intervalle de spawn proportionnellement à la vitesse
-		spawn_interval = BASE_SPAWN_INTERVAL * (BASE_CONVEYOR_SPEED / conveyor_speed)
-		print("Vitesse du tapis: %.1f - Intervalle spawn: %.1fs" % [conveyor_speed, spawn_interval])
 
 const THROW_FORCE: float = 3.0
 
@@ -147,35 +119,35 @@ func release_item() -> void:
 		held_item.linear_velocity = throw_direction * THROW_FORCE
 		held_item = null
 
-func spawn_item() -> void:
-	if item_scene:
-		var item = item_scene.instantiate()
-		item.position = Vector3(-2.1, 1.3, -0.8)  # Au-dessus du tapis roulant
-		# Rotation aléatoire initiale
-		item.rotation = Vector3(
-			randf_range(0, TAU),
-			randf_range(0, TAU),
-			randf_range(0, TAU)
-		)
-		add_child(item)
+func generate_item_data() -> Dictionary:
+	var color_index = randi() % PRODUCT_COLORS.size()
+	var color = PRODUCT_COLORS[color_index]
+	var product_name = PRODUCT_NAMES[color_index]
+	var size = Vector3(
+		randf_range(SIZE_MIN.x, SIZE_MAX.x),
+		randf_range(SIZE_MIN.y, SIZE_MAX.y),
+		randf_range(SIZE_MIN.z, SIZE_MAX.z)
+	)
+	var volume = size.x * size.y * size.z
+	var price = snappedf(1.0 + volume * 100.0, 0.1)
+	return {
+		"color": color,
+		"name": product_name,
+		"size": size,
+		"price": price
+	}
 
-		# Appliquer une apparence aléatoire basée sur les produits des étagères
-		var color_index = randi() % PRODUCT_COLORS.size()
-		var color = PRODUCT_COLORS[color_index]
-		var product_name = PRODUCT_NAMES[color_index]
-
-		# Générer une taille aléatoire
-		var size = Vector3(
-			randf_range(SIZE_MIN.x, SIZE_MAX.x),
-			randf_range(SIZE_MIN.y, SIZE_MAX.y),
-			randf_range(SIZE_MIN.z, SIZE_MAX.z)
-		)
-
-		# Prix basé sur le volume
-		var volume = size.x * size.y * size.z
-		var price = snappedf(1.0 + volume * 100.0, 0.1)
-
-		item.set_appearance(size, color, product_name, price)
+func instantiate_item(data: Dictionary) -> RigidBody3D:
+	var item = item_scene.instantiate()
+	item.position = Vector3(-2.1, 1.3, -0.8)
+	item.rotation = Vector3(
+		randf_range(0, TAU),
+		randf_range(0, TAU),
+		randf_range(0, TAU)
+	)
+	add_child(item)
+	item.set_appearance(data.size, data.color, data.name, data.price)
+	return item
 
 func check_scanning(item: Node3D) -> void:
 	if not item.has_method("check_barcode_facing"):
@@ -230,7 +202,26 @@ func scan_item(item: Node3D) -> void:
 
 	scan_sound.play()
 
-func spawn_customer() -> void:
-	if customer_scene and current_customer == null:
-		current_customer = customer_scene.instantiate()
-		add_child(current_customer)
+func spawn_next_customer() -> void:
+	_reset_hud()
+	var item_count = randi_range(1, 20)
+	var items_data: Array = []
+	for i in range(item_count):
+		items_data.append(generate_item_data())
+	current_customer = customer_scene.instantiate()
+	current_customer.setup(items_data, self)
+	add_child(current_customer)
+	current_customer.customer_left.connect(_on_customer_left)
+
+func _on_customer_left() -> void:
+	if current_customer:
+		current_customer.queue_free()
+		current_customer = null
+	get_tree().create_timer(2.0).timeout.connect(spawn_next_customer)
+
+func _reset_hud() -> void:
+	total_price = 0.0
+	items_scanned = 0
+	total_label.text = "Total: 0.00 €"
+	for child in scan_item_list.get_children():
+		child.queue_free()

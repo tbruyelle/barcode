@@ -59,15 +59,6 @@ albedo_color = Color(0.8, 0.9, 1, 0.3)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ceiling"]
 albedo_color = Color(0.95, 0.95, 0.95, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_green"]
-albedo_color = Color(0.2, 0.8, 0.2, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_red"]
-albedo_color = Color(0.8, 0.2, 0.2, 1)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_button_death"]
-albedo_color = Color(0.62352943, 0.003921569, 0.9372549, 1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_scanhud"]
 bg_color = Color(0.1, 0.1, 0.15, 0.75)
 corner_radius_top_left = 6
@@ -262,30 +253,6 @@ material = SubResource("StandardMaterial3D_wall")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.687094, 5.00681, -0.018609762)
 size = Vector3(21.376953, 0.1, 10)
 material = SubResource("StandardMaterial3D_ceiling")
-
-[node name="ButtonSpeedDown" type="CSGCylinder3D" parent="Checkout" unique_id=1011769949 groups=["speed_button"]]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.6, 0.7197862, -1.1152271)
-use_collision = true
-radius = 0.04
-height = 0.03
-material = SubResource("StandardMaterial3D_button_green")
-metadata/speed_change = -1
-
-[node name="ButtonSpeedUp" type="CSGCylinder3D" parent="Checkout" unique_id=1948389453 groups=["speed_button"]]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.6943516, 0.72, -1.115)
-use_collision = true
-radius = 0.04
-height = 0.03
-material = SubResource("StandardMaterial3D_button_red")
-metadata/speed_change = 1
-
-[node name="ButtonSpeedDeath" type="CSGCylinder3D" parent="Checkout" unique_id=1854621168 groups=["speed_button"]]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.7913342, 0.72, -1.115)
-use_collision = true
-radius = 0.04
-height = 0.03
-material = SubResource("StandardMaterial3D_button_death")
-metadata/speed_change = 3
 
 [node name="RegisterStand" type="CSGBox3D" parent="Checkout" unique_id=878410090]
 transform = Transform3D(-0.0013089613, 0, -0.99999917, 0, 1, 0, 0.99999917, 0, -0.0013089613, -0.9270171, 0.35, -1.3777465)

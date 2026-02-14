@@ -52,7 +52,7 @@ func _physics_process(delta: float) -> void:
 		collision_cooldown -= delta
 	# Mouvement sur le tapis roulant uniquement si l'objet est dessus
 	if _is_on_conveyor() and not freeze:
-		linear_velocity.x = get_parent().conveyor_speed
+		linear_velocity.x = get_parent().CONVEYOR_SPEED
 
 var halo: MeshInstance3D = null
 var halo_material: StandardMaterial3D = null

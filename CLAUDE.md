@@ -18,10 +18,10 @@ scenes/
     └── grocery_item.tscn  # Article scannable (RigidBody3D)
 
 scripts/
-├── game_manager.gd        # Logique du jeu (spawn, grab, scan, vitesse tapis, clients)
+├── game_manager.gd        # Logique du jeu (grab, scan, clients, HUD)
 ├── player.gd              # Caméra première personne (rotation souris)
 ├── grocery_item.gd        # Comportement des articles + détection tapis + effet scanné
-├── customer.gd            # Comportement du client (déplacement le long de la caisse)
+├── customer.gd            # Client avec state machine (dépôt, marche, collecte, départ)
 ├── cash_register.gd       # Caisse enregistreuse (tiroir animé)
 ├── beep_generator.gd      # Génération procédurale du son de bip
 ├── detection_zone.gd      # Animation scintillante de la zone de détection
@@ -68,10 +68,7 @@ scripts/
 - **Q/E/R** : Tourner l'objet (axes X/Y/Z)
 - **Molette** : Tourner l'objet (axe X)
 - **Échap** : Libérer/capturer la souris
-- **Boutons sur comptoir** : Contrôler la vitesse du tapis
-  - Vert : Diminuer la vitesse
-  - Rouge : Augmenter la vitesse
-  - Violet : Vitesse maximale (death mode)
+- **Bouton jaune** : Ouvrir/fermer le tiroir-caisse
 
 ## Points techniques importants
 
@@ -87,16 +84,19 @@ scripts/
 
 4. **CSGBox3D** : `use_collision = true` nécessaire pour les collisions physiques
 
-5. **Vitesse du tapis** : Configurable via boutons (min: 0.3, max: 2.0), stockée dans `game_manager.gd` et accessible via `get_parent().conveyor_speed`. Affecte aussi la fréquence de spawn des articles.
+5. **Vitesse du tapis** : Constante `CONVEYOR_SPEED = 0.6` dans `game_manager.gd`, accessible via `get_parent().CONVEYOR_SPEED` depuis `grocery_item.gd`.
 
-6. **Spawn des articles** : Position fixe avec rotation aléatoire. Articles générés avec couleurs et tailles variées (8 couleurs, tailles aléatoires). Prix calculé selon le volume. Méthode `set_appearance()` dans `grocery_item.gd`.
+6. **Spawn des articles** : Piloté par le client. `generate_item_data()` crée les données (couleur, nom, taille, prix). `instantiate_item(data)` instancie le RigidBody3D sur le tapis. Méthode `set_appearance()` dans `grocery_item.gd`.
 
 7. **Projection des objets** : Les objets sont projetés dans la direction de la caméra au lâcher (`THROW_FORCE = 3.0`)
 
-8. **Client** : Sprite3D avec billboard axe Y. Animation de marche naturelle :
-   - Rebond vertical (bob) : fréquence 0.8 Hz, amplitude 0.01m
-   - Balancement latéral (sway) : fréquence 0.6 Hz, amplitude 0.02 rad
-   - Déplacement : 0.1 m/s du début (x=-3) vers la fin (x=1.5) de la caisse
+8. **Client** : Sprite3D avec billboard axe Y + state machine (DEPOSITING → WALKING_TO_BASKET → COLLECTING → LEAVING) :
+   - **DEPOSITING** : Apparaît à (-2.1, 0, 0.2) avec articles en orbite. Dépose un article toutes les 2s sur le tapis via tween + `instantiate_item()`
+   - **WALKING_TO_BASKET** : Marche vers (1.5, 0, 0.2) avec animation bob/sway (0.8/0.6 Hz)
+   - **COLLECTING** : Pause 2s au panier. Les articles scannés deviennent des visuels orbitants, les physiques sont `queue_free()`
+   - **LEAVING** : Marche vers la porte (5, 0, 0.2) avec articles collectés en orbite. Signal `customer_left` → `queue_free()` + nouveau client après 2s
+   - **Orbite** : rayon 0.4m, vitesse 1.5 rad/s, hauteur variable (0.6 + 0.3*sin)
+   - **HUD** : Réinitialisé à chaque nouveau client (`_reset_hud()`)
 
 9. **Rebords** : Petits rebords sur le tapis roulant (avant/arrière) et le comptoir (côté client) pour empêcher les objets de tomber
 
@@ -132,5 +132,5 @@ scripts/
 
 ## À faire (idées futures)
 
-- File de clients (un client implémenté, à étendre pour une file d'attente)
+- File de clients (file d'attente visible avec plusieurs clients)
 - Système de difficulté progressive
