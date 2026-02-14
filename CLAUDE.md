@@ -23,7 +23,9 @@ scripts/
 ├── grocery_item.gd        # Comportement des articles + détection tapis + effet scanné
 ├── customer.gd            # Comportement du client (déplacement le long de la caisse)
 ├── cash_register.gd       # Caisse enregistreuse (tiroir animé)
-└── beep_generator.gd      # Génération procédurale du son de bip
+├── beep_generator.gd      # Génération procédurale du son de bip
+├── detection_zone.gd      # Animation scintillante de la zone de détection
+└── laser_glow.gd          # Lueur rouge animée le long des lasers
 ```
 
 ## Gameplay
@@ -102,6 +104,8 @@ scripts/
 11. **HUD articles scannés** : Panneau semi-transparent en haut à droite (PanelContainer sous UI/CanvasLayer). Police monospace console. Affiche la liste des articles scannés avec prix et le total en bas. Mis à jour en temps réel dans `scan_item()` via `game_manager.gd`. Auto-scroll vers le dernier article via `ensure_control_visible`.
 
 12. **Sons de collision** : Chaque article a un `AudioStreamPlayer3D` (`CollisionSound`). Son procédural (80ms, 80-240Hz, décroissance exp). Volume proportionnel à la vitesse d'impact (seuil 0.3 m/s), pitch aléatoire (0.8-1.3x). Nécessite `contact_monitor = true` et `max_contacts_reported = 4` sur le RigidBody3D.
+
+13. **Effets visuels scanner** : `detection_zone.gd` anime l'alpha et l'émission de la DetectionZone (3 ondes superposées 6/14/23 Hz). `laser_glow.gd` fait voyager une sphère lumineuse rouge le long de chaque LaserBeam (droite→gauche horizontal, haut→bas vertical), intensité variable selon la position.
 
 ## Environnement
 
