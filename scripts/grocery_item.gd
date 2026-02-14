@@ -119,38 +119,59 @@ func set_appearance(size: Vector3, color: Color, product_name: String, product_p
 		var halo_box = halo.mesh as BoxMesh
 		halo_box.size = size + Vector3(0.01, 0.01, 0.01)
 
+var sound_conveyor: AudioStreamWAV
+var sound_basket: AudioStreamWAV
+var sound_default: AudioStreamWAV
+
 func _generate_collision_sound() -> void:
+	# Tapis / défaut : son sourd, basses fréquences
+	sound_conveyor = _make_sound(0.08, 45.0, [
+		[120.0, 0.5], [240.0, 0.2], [80.0, 0.3],
+	])
+	sound_default = sound_conveyor
+	# Panier : son plastique creux, basses + résonance
+	sound_basket = _make_sound(0.1, 30.0, [
+		[180.0, 0.4], [360.0, 0.15], [90.0, 0.35], [450.0, 0.1],
+	])
+	collision_sound.stream = sound_default
+
+func _make_sound(duration: float, decay: float, harmonics: Array) -> AudioStreamWAV:
 	var sample_rate := 44100.0
-	var duration := 0.08
 	var samples := int(sample_rate * duration)
 	var audio := AudioStreamWAV.new()
 	audio.format = AudioStreamWAV.FORMAT_16_BITS
 	audio.mix_rate = int(sample_rate)
 	audio.stereo = false
-
 	var data := PackedByteArray()
 	data.resize(samples * 2)
-
 	for i in range(samples):
 		var t := float(i) / sample_rate
-		# Enveloppe à décroissance rapide
-		var envelope := exp(-t * 45.0)
-		# Son sourd : basses fréquences + harmoniques
-		var value := sin(TAU * 120.0 * t) * 0.5
-		value += sin(TAU * 240.0 * t) * 0.2
-		value += sin(TAU * 80.0 * t) * 0.3
+		var envelope := exp(-t * decay)
+		var value := 0.0
+		for h: Array in harmonics:
+			value += sin(TAU * (h[0] as float) * t) * (h[1] as float)
 		value *= envelope
 		var sample_val := int(clampf(value, -1.0, 1.0) * 32767)
 		data[i * 2] = sample_val & 0xFF
 		data[i * 2 + 1] = (sample_val >> 8) & 0xFF
-
 	audio.data = data
-	collision_sound.stream = audio
+	return audio
+
+# Tapis x=-1.5, Panier x=1.17
+const CONVEYOR_X: float = -0.5
+const BASKET_X: float = 0.5
 
 func _on_body_entered(_body: Node) -> void:
 	var speed := linear_velocity.length()
 	if speed < 0.3:
 		return
+	# Choisir le son selon la position
+	if global_position.x < CONVEYOR_X:
+		collision_sound.stream = sound_conveyor
+	elif global_position.x > BASKET_X:
+		collision_sound.stream = sound_basket
+	else:
+		collision_sound.stream = sound_default
 	# Volume selon la vitesse d'impact
 	collision_sound.volume_db = lerpf(-18.0, 0.0, clampf(speed / 4.0, 0.0, 1.0))
 	# Variation de pitch pour varier les sons
