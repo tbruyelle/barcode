@@ -28,31 +28,35 @@ scripts/
 
 ## Gameplay
 
-- **Position joueur/caissier** : z=-1.6 (au niveau de la caméra), face au comptoir
-- **Tapis roulant** : x=-1.5, articles avancent de gauche à droite (x+)
-- **Scanner** : Sur le comptoir, zone de détection verte, laser rouge
+- **Position joueur/caissier** : z=-1.6, caméra regarde vers z+ (vers les clients)
+- **Tapis roulant** : x=-1.5, z=-0.8, à DROITE du caissier, articles avancent de droite à gauche (x+)
+- **Scanner** : x=0, z=-0.8, au CENTRE du comptoir, zone de détection verte, laser rouge
 - **Bac de réception** : Creusé dans le comptoir avec pente descendante vers le panier
-- **Panier de course** : Reçoit les articles scannés en bas de la pente
+- **Panier de course** : x=1.17, z=-0.8, à GAUCHE du caissier, reçoit les articles scannés
 - **Rayons supermarché** : 3 allées de 12m avec étagères double-face et produits variés
-- **Caisse enregistreuse** : À droite du caissier (x=1.2, z=-1.3), sur un meuble dédié. Boutons décoratifs + bouton jaune pour ouvrir/fermer le tiroir
+- **Caisse enregistreuse** : x=-0.93, z=-1.38, à DROITE et légèrement DERRIÈRE le caissier. Boutons décoratifs + bouton jaune pour ouvrir/fermer le tiroir
 
 ## Disposition spatiale de la caisse
 
 ```
-        x- (gauche)                              x+ (droite)
-            ←────────────────────────────────────────→
+        x+ (gauche caissier)                     x- (droite caissier)
+            ────────────────────────────────────────→
 
-                    TAPIS           SCANNER      PANIER
+                    PANIER          SCANNER      TAPIS
      z+            ┌───────────────┬───────┬──────────┐
-   (clients)       │   x=-1.5      │  x=0  │  x=1.17  │  ← Comptoir (z=-0.8)
-                   └───────────────┴───────┴──────────┘
-     z-              JOUEUR/CAISSIER (z=-1.6, caméra)
+   (devant)        │   x=1.17      │  x=0  │  x=-1.5  │  ← Comptoir (z=-0.8)
+   clients         └───────────────┴───────┴──────────┘
+
+     z-              CAISSIER (z=-1.6) regarde vers z+
+  (derrière)          CAISSE ENREG. (x=-0.93, z=-1.38)
 ```
 
-- **Début de la caisse** : x négatif (côté tapis, x ≈ -1.5) - où les articles arrivent
-- **Fin de la caisse** : x positif (côté panier, x ≈ 1.17) - où les articles scannés sortent
-- **Côté clients** : z positif (z ≈ 0.2), de l'autre côté du comptoir
-- **Côté caissier** : z négatif (z = -1.6), où se trouve la caméra/joueur
+**Orientation** (caissier à z=-1.6, regarde vers z+) :
+- **Gauche** (x+) : Panier (x=1.17)
+- **Centre** (x=0) : Scanner
+- **Droite** (x-) : Tapis roulant (x=-1.5), Caisse enregistreuse (x=-0.93)
+- **Devant** (z+) : Comptoir puis clients (z=0.2, se déplacent de x=-3 à x=1.5)
+- **Derrière** (z-) : Côté caissier
 
 ## Contrôles
 
